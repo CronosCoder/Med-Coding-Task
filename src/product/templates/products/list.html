@@ -97,8 +97,24 @@
                 <div class="col-md-6">
                     <p>Showing {{ start_index }} to {{ end_index }} products of {{ paginator.count }}</p>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1"><button>&laquo; first</button></a>
+                        <a href="?page={{ page_obj.previous_page_number }}"><button>previous</button></a>
+                    {% endif %}
 
+                    {% for num in paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <button class="bg-info">{{ num }}</button>
+                        {% else %}
+                            <a href="?page={{ num }}"><button>{{ num }}</button></a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}"><button class="text-info">next</button></a>
+                        <a href="?page={{ paginator.num_pages }}"><button>last &raquo;</button></a>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
