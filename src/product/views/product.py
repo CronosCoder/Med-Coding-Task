@@ -1,4 +1,5 @@
 from django.views import generic
+from django.core.paginator import Paginator
 from product.models import Variant,Product,ProductVariantPrice
 
 
@@ -21,8 +22,16 @@ class ProductListView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        paginator = context['paginator']
+        page_obj = context['page_obj']
+
+        start_index = paginator.per_page * (page_obj.number - 1) + 1
+        end_index = min(start_index + paginator.per_page - 1, paginator.count)
+        products = context['products'][start_index - 1:end_index]
+
         product_data = []
-        for product in context['products']:
+        for product in products:
             variants = ProductVariantPrice.objects.filter(product=product)
             variant_data = []
             for variant in variants:
@@ -38,4 +47,7 @@ class ProductListView(generic.ListView):
                 'variants': variant_data
             })
         context['products'] = product_data
+        context['start_index'] = start_index
+        context['end_index'] = end_index
+        
         return context
