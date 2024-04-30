@@ -18,7 +18,9 @@
                 <div class="col-md-2">
                     <select name="variant" id="" class="form-control">
                         <option selected disabled>--Select A Variant--</option>
-
+                        {% for variant in variants %}
+                            <option value="{{variant.id}}">{{variant}}</option>
+                        {% endfor %}
                     </select>
                 </div>
 
@@ -88,7 +90,6 @@
 
                 </table>
             </div>
-
         </div>
 
         <div class="card-footer">
