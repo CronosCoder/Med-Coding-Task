@@ -1,14 +1,22 @@
-from django.forms import forms, ModelForm, CharField, TextInput, Textarea, BooleanField, CheckboxInput
 
-from product.models import Variant
+from django import forms
+from product.models import Variant,Product
 
-
-class VariantForm(ModelForm):
+class VariantForm(forms.ModelForm):
     class Meta:
         model = Variant
         fields = '__all__'
         widgets = {
-            'title': TextInput(attrs={'class': 'form-control'}),
-            'description': Textarea(attrs={'class': 'form-control'}),
-            'active': CheckboxInput(attrs={'class': 'form-check-input', 'id': 'active'})
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'active': forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'active'})
         }
+
+class ProductUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['title', 'sku', 'description']
+
+    def save(self, commit=True):
+        product = super().save(commit)
+        return product

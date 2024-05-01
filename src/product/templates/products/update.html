@@ -1,0 +1,30 @@
+{% extends 'backend/base.html' %}
+
+{% block title %} Product Update {% endblock %}
+
+{% block content %}
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Update Product Data</h1>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                {% for product_variant_price in product_variant_prices %}
+                    <input type="hidden" name="variant_title_{{ forloop.counter0 }}" value="{{ product_variant_price.variant_title }}">
+                    <label for="id_price_{{ forloop.counter0 }}">Price:</label>
+                    <input type="text" id="id_price_{{ forloop.counter0 }}" name="price_{{ forloop.counter0 }}" value="{{ product_variant_price.price }}"><br>
+                    <label for="id_stock_{{ forloop.counter0 }}">Stock:</label>
+                    <input type="text" id="id_stock_{{ forloop.counter0 }}" name="stock_{{ forloop.counter0 }}" value="{{ product_variant_price.stock }}"><br>
+                {% endfor %}
+
+                <input type="hidden" name="num_prices" value="{{ num_prices }}">
+                
+                <button type="submit">Update</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

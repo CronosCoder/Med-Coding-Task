@@ -1,6 +1,8 @@
 from django.views import generic
+from django.shortcuts import redirect
 from django.db.models import Q
 from product.models import Variant,Product,ProductVariantPrice,ProductVariant
+from product.forms import ProductUpdateForm
 
 
 class CreateProductView(generic.TemplateView):
@@ -72,4 +74,35 @@ class ProductListView(generic.ListView):
         context['variants'] = ProductVariant.objects.all().order_by('variant')
         context['start_index'] = start_index
         context['end_index'] = end_index
+        return context
+    
+class ProductUpdateView(generic.UpdateView):
+    model = Product
+    form_class = ProductUpdateForm
+    template_name = 'products/update.html'
+    success_url = '/product/list/'
+
+    def form_valid(self, form):
+        product = form.save(commit=False)
+        product.save()
+        
+        num_prices = int(self.request.POST.get('num_prices', 0))
+        for i in range(num_prices):
+            variant_title = self.request.POST.get(f'variant_title_{i}')
+            price = self.request.POST.get(f'price_{i}')
+            stock = self.request.POST.get(f'stock_{i}')
+            
+            if variant_title:
+                product_variant_price, _ = ProductVariantPrice.objects.get_or_create(product=product, variant_title=variant_title)
+                product_variant_price.price = price
+                product_variant_price.stock = stock
+                product_variant_price.save()
+        return redirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        instance = self.get_object()
+        product_variant_prices = instance.productvariantprice_set.all()
+        context['num_prices'] = product_variant_prices.count()
+        context['product_variant_prices'] = product_variant_prices
         return context
